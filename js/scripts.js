@@ -43,6 +43,8 @@ function displayEmployees(employees){
 getEmployees();
 
 function employeeModal(employee){
+    let  dob= new Date(employee.dob.date); // My date of birth    
+    let formatted = `${dob.getMonth() + 1}/${dob.getDate()}/${dob.getFullYear()}`; 
     const modalHTML= `
     <div class="modal-container">
         <div class="modal">
@@ -55,7 +57,7 @@ function employeeModal(employee){
                 <hr>
                 <p class="modal-text">${employee.cell}</p>
                 <p class="modal-text">${employee.location.street.number} ${employee.location.street.name}., ${employee.location.city}, ${employee.location.state} ${employee.location.postcode}</p>
-                <p class="modal-text">Birthday: ${employee.dob.date}</p>
+                <p class="modal-text">Birthday: ${formatted}</p>
             </div>
         </div>
             <div class="modal-btn-container">
