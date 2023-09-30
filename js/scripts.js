@@ -1,6 +1,19 @@
 
+const body= document.querySelector('body')
 const container= document.querySelector('.gallery')
+const searchContainer= document.querySelector('.search-container')
 let employees= [];
+const searchHTML = `
+    <form action="#" method="get">
+        <input type="search" id="search-input" class="search-input" placeholder="Search...">
+        <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+    </form>
+
+`;
+searchContainer.insertAdjacentHTML('afterend',searchHTML)
+const searchForm= document.querySelector('form');
+const searchBar= document.getElementById("search-input") 
+const searchButton= document.getElementById("search-submit") 
 async function getEmployees(){
     try{
     const response = await fetch('https://randomuser.me/api/?nat=us&results=12')
@@ -8,7 +21,7 @@ async function getEmployees(){
     const data= await response.json();
     const employees= data.results;
     displayEmployees(employees);
-    console.log(employees)
+    // searchEmployees(employees);
     }catch(error){
         console.log(error)
     }
@@ -38,6 +51,21 @@ function displayEmployees(employees){
             );
             employeeModal(employee);
         });
+        searchForm.addEventListener('keyup', (e) =>{
+            const searchInput= searchBar.value.toUpperCase(); 
+            const employeeName= document.querySelectorAll('.card-name')
+            employeeName.forEach(employee => {
+                // const name= `${employee.name.first} ${employee.name.last}`;
+                if (employee.textContent.toUpperCase().includes(searchInput)){
+                    employee.parentNode.parentNode.style.display = "flex";
+                }else{
+                    employee.parentNode.parentNode.style.display = "none";
+                }
+            })  
+            searchButton.onclick= () => { //once the search button is clicked it goes back to a value of an empty string
+            searchBar.value= '';
+            }
+        })
     });
 }
 getEmployees();
@@ -64,8 +92,8 @@ function employeeModal(employee){
             <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
             <button type="button" id="modal-next" class="modal-next btn">Next</button>
             </div>
-    </div>
-    `; 
+
+    </div>    `; 
     const modals= document.querySelectorAll('.modal-container')
     container.insertAdjacentHTML('afterend', modalHTML)
     modals.forEach(modal => {
@@ -81,6 +109,4 @@ function employeeModal(employee){
         }
         })
     )
-
 }
-
