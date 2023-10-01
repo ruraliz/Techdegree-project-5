@@ -14,22 +14,25 @@ searchContainer.insertAdjacentHTML('afterend',searchHTML)
 const searchForm= document.querySelector('form');
 const searchBar= document.getElementById("search-input") 
 const searchButton= document.getElementById("search-submit") 
+
 async function getEmployees(){
     try{
     const response = await fetch('https://randomuser.me/api/?nat=us&results=12')
     if(!response.ok) throw new Error('something went wrong')
     const data= await response.json();
-    const employees= data.results;
-    displayEmployees(employees);
-    // searchEmployees(employees);
+    employees.push(...data.results);
+    for(let i = 0; i < employees.length; i++){
+        employeeCard(employees[i], i)
+    }
+    indCard(employees)
     }catch(error){
         console.log(error)
     }
 }
-function displayEmployees(employees){
-    employees.map(employee => {
+
+function employeeCard(employee, index){
         const employeeHTML= `
-            <div class="card">
+            <div class="card" data-index=${index}>
                 <div class="card-img-container">
                     <img class="card-img" src=${employee.picture.large} alt="profile picture">
                 </div>
@@ -40,38 +43,22 @@ function displayEmployees(employees){
                 </div>
             </div>
         `;
-       container.insertAdjacentHTML('beforeend', employeeHTML)
-       const employeeCard= document.querySelector('.card')
-        employeeCard.addEventListener('click', (e)=> {
-            const card= e.target.closest('.card-info-container');
-            if(!card) return;
-            const employeeName= card.dataset.name;
-            const employee= employees.find(
-                (employee) => employee.name.first === employeeName
-            );
-            employeeModal(employee);
-        });
-        searchForm.addEventListener('keyup', (e) =>{
-            const searchInput= searchBar.value.toUpperCase(); 
-            const employeeName= document.querySelectorAll('.card-name')
-            employeeName.forEach(employee => {
-                // const name= `${employee.name.first} ${employee.name.last}`;
-                if (employee.textContent.toUpperCase().includes(searchInput)){
-                    employee.parentNode.parentNode.style.display = "flex";
-                }else{
-                    employee.parentNode.parentNode.style.display = "none";
-                }
-            })  
-            searchButton.onclick= () => { //once the search button is clicked it goes back to a value of an empty string
-            searchBar.value= '';
-            }
-        })
-    });
+     container.insertAdjacentHTML('beforeend', employeeHTML)
+       searchEmployee()
 }
-getEmployees();
 
-function employeeModal(employee){
-    let  dob= new Date(employee.dob.date); // My date of birth    
+function indCard(employees){
+    const employeeCard= container.querySelectorAll('.card')
+       employeeCard.forEach((card, index) => {
+        card.addEventListener('click', ()=> {
+                const employeeData= employees[index]
+                employeeModal(employeeData, index)
+            })
+       });
+}
+
+function employeeModal(employee, index){
+    let  dob= new Date(employee.dob.date);   
     let formatted = `${dob.getMonth() + 1}/${dob.getDate()}/${dob.getFullYear()}`; 
     const modalHTML= `
     <div class="modal-container">
@@ -93,20 +80,54 @@ function employeeModal(employee){
             <button type="button" id="modal-next" class="modal-next btn">Next</button>
             </div>
 
-    </div>    `; 
-    const modals= document.querySelectorAll('.modal-container')
+    </div> `; 
     container.insertAdjacentHTML('afterend', modalHTML)
-    modals.forEach(modal => {
-        modal.style.display= "none";
+    closeModal()  
+    const modalContainer = document.querySelector('.modal-container');
+    modalContainer.addEventListener('click', e => {
+      if (e.target.id === 'modal-next') {
+        if (index !== employees.length - 1) {
+          index += 1;
+          document.body.removeChild(modalContainer);
+          employeeModal(employees[index], index);
+        }
+      }
+      if (e.target.id === 'modal-prev') {
+        if (index !== 0) {
+          index -= 1;
+          document.body.removeChild(modalContainer);
+          employeeModal(employees[index], index);
+        }
+      }
+    });
+
+}
+
+function searchEmployee(){
+    searchForm.addEventListener('keyup', (e) =>{
+        const searchInput= searchBar.value.toUpperCase(); 
+        const employeeName= document.querySelectorAll('.card-name')
+        employeeName.forEach(employee => {
+            if (employee.textContent.toUpperCase().includes(searchInput)){
+                employee.parentNode.parentNode.style.display = "flex";
+            }else{
+                employee.parentNode.parentNode.style.display = "none";
+            }
+        })  
+        searchButton.onclick= () => { //once the search button is clicked it goes back to a value of an empty string
+        searchBar.value= '';
+        }
     })
+}
+function closeModal(){
     const closeButton= document.querySelectorAll('.modal-close-btn')
-    closeButton.forEach(button => 
+    closeButton.forEach(button => {
         button.addEventListener('click', () => {
-            console.log('clicked')
         const modalContainer= document.querySelector('.modal-container')
         if(modalContainer){
             modalContainer.remove();
         }
         })
-    )
+    })
 }
+getEmployees();
