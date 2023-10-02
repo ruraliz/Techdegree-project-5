@@ -1,36 +1,36 @@
 
-document.body.style.backgroundImage = "url('https://fiberc.com/wp-content/uploads/Company-Facts-Background.png')";
+document.body.style.backgroundImage = "url('https://fiberc.com/wp-content/uploads/Company-Facts-Background.png')"; //adds backgroung image to the body of the page. 
 const container= document.querySelector('.gallery')
 const searchContainer= document.querySelector('.search-container')
-let employees= [];
-const searchHTML = `
+let employees= []; //creates an array for employees. 
+
+const searchHTML = ` 
     <form action="#" method="get">
         <input type="search" id="search-input" class="search-input" placeholder="Search...">
         <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
     </form>
 
 `;
-searchContainer.insertAdjacentHTML('afterend',searchHTML)
+searchContainer.insertAdjacentHTML('afterend',searchHTML) 
 const searchForm= document.querySelector('form');
 const searchBar= document.getElementById("search-input") 
 const searchButton= document.getElementById("search-submit") 
 
-async function getEmployees(){
+async function getEmployees(){ //function for fetching users from api.
     try{
     const response = await fetch('https://randomuser.me/api/?nat=us&results=12')
     if(!response.ok) throw new Error('something went wrong')
     const data= await response.json();
     employees.push(...data.results);
-    for(let i = 0; i < employees.length; i++){
+    for(let i = 0; i < employees.length; i++){ // looping through employees for each ind employee card.
         employeeCard(employees[i], i)
     }
-    indCard(employees)
+    indCard(employees) //calling each card with the employees arrays. 
     }catch(error){
         console.log(error)
     }
 }
-
-function employeeCard(employee, index){
+function employeeCard(employee, index){ //displays each employee info and adds an index to each. 
         const employeeHTML= `
             <div class="card" data-index=${index}>
                 <div class="card-img-container">
@@ -44,10 +44,10 @@ function employeeCard(employee, index){
             </div>
         `;
      container.insertAdjacentHTML('beforeend', employeeHTML)
-       searchEmployee()
+       searchEmployee() // call search function. 
 }
 
-function indCard(employees){
+function indCard(employees){ // creates a card for each employee displayed and adds event listener to call for employeeModal function when each employee is clicked.
     const employeeCard= container.querySelectorAll('.card')
        employeeCard.forEach((card, index) => {
         card.addEventListener('click', ()=> {
@@ -57,7 +57,7 @@ function indCard(employees){
        });
 }
 
-function employeeModal(employee, index){
+function employeeModal(employee, index){ // function with html for each employee modal.
     let  dob= new Date(employee.dob.date);   
     let formatted = `${dob.getMonth() + 1}/${dob.getDate()}/${dob.getFullYear()}`; 
     const modalHTML= `
@@ -82,9 +82,9 @@ function employeeModal(employee, index){
 
     </div> `; 
     container.insertAdjacentHTML('afterend', modalHTML)
-    closeModal()  
+    closeModal()  // calls function to even listener to close modal 
     const modalContainer = document.querySelector('.modal-container');
-    modalContainer.addEventListener('click', e => {
+    modalContainer.addEventListener('click', e => { //event listener to add a way to toddle over the employee modals and clicked through them using Next and Prev buttons. 
       if (e.target.id === 'modal-next') {
         if (index !== employees.length - 1) {
           index += 1;
@@ -102,8 +102,7 @@ function employeeModal(employee, index){
     });
 
 }
-
-function searchEmployee(){
+function searchEmployee(){ //search for employees by name using keyup on event listener.
     searchForm.addEventListener('keyup', (e) =>{
         const searchInput= searchBar.value.toUpperCase(); 
         const employeeName= document.querySelectorAll('.card-name')
@@ -114,12 +113,12 @@ function searchEmployee(){
                 employee.parentNode.parentNode.style.display = "none";
             }
         })  
-        searchButton.onclick= () => { //once the search button is clicked it goes back to a value of an empty string
+        searchButton.onclick= () => { //once the search button is clicked it goes back to a value of an empty string.
         searchBar.value= '';
         }
     })
 }
-function closeModal(){
+function closeModal(){ // function to close modal but clicking on the close button.
     const closeButton= document.querySelectorAll('.modal-close-btn')
     closeButton.forEach(button => {
         button.addEventListener('click', () => {
