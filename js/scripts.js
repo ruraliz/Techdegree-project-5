@@ -1,5 +1,5 @@
 
-const body= document.querySelector('body')
+document.body.style.backgroundImage = "url('https://fiberc.com/wp-content/uploads/Company-Facts-Background.png')";
 const container= document.querySelector('.gallery')
 const searchContainer= document.querySelector('.search-container')
 let employees= [];
